@@ -5,7 +5,7 @@ const ToolInputSchema = require('./toolsinput');
 
 const AuditSchema = new mongoose.Schema(
   {
-    // Public share URL uses this — separate from _id for security
+    // Public share URL uses this id separate from _id for security
     shareSlug: {
       type: String,
       required: true,
@@ -13,7 +13,6 @@ const AuditSchema = new mongoose.Schema(
       trim: true,
     },
 
-    // Form inputs
     teamSize: {
       type: Number,
       required: [true, "Team size is required"],
@@ -24,12 +23,12 @@ const AuditSchema = new mongoose.Schema(
       type: String,
       required: [true, "Use case is required"],
       enum: {
-        values: ["coding", "writing", "research", "customer_support", "data", "mixed"],
+        values: ["coding", "writing", "research", "customer_support", "data", "mixed", "others"],
         message: "{VALUE} is not a valid use case",
       },
     },
 
-    // Raw form data — stored so you can re-run engine on old audits if logic changes
+  
     toolsInput: {
       type: [ToolInputSchema],
       required: true,
@@ -39,7 +38,7 @@ const AuditSchema = new mongoose.Schema(
       },
     },
 
-    // Engine output — one per tool
+  
     recommendations: {
       type: [RecommendationSchema],
       required: true,
@@ -84,17 +83,14 @@ const AuditSchema = new mongoose.Schema(
   }
 );
 
-// ─── Indexes ──────────────────────────────────────────────────────────────────
 
-AuditSchema.index({ shareSlug: 1 });         // fast share page lookups
-AuditSchema.index({ createdAt: -1 });        // latest audits first for admin
 
+AuditSchema.index({ shareSlug: 1 });         
+AuditSchema.index({ createdAt: -1 });       
 
 
 AuditSchema.virtual("hasSavings").get(function () {
   return this.totalMonthlySavings > 0;
 });
-
-
 
 module.exports = mongoose.model("Audit", AuditSchema);
